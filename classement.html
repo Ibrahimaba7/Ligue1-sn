@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classement - SN LIGUE 1</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        :root {
+            --premier-couleur: rgb(214, 47, 47);
+            --second-couleur: orange;
+            --troisieme-couleur: whitesmoke;
+        }
+
+        body {
+            background-color: var(--troisieme-couleur);
+        }
+
+        header {
+            display: flex;
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, var(--premier-couleur), #b22222);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        header img {
+            width: 80px;
+            height: auto;
+            border-radius: 50%;
+            border: 3px solid white;
+            transition: transform 0.3s;
+        }
+
+        header img:hover {
+            transform: scale(1.05);
+        }
+
+        header nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        header nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        header nav ul li a:hover {
+            color: var(--second-couleur);
+            text-decoration: underline;
+        }
+
+        header h1 {
+            color: var(--second-couleur);
+            font-size: 2rem;
+            letter-spacing: 2px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .page-header h2 {
+            display: inline-block;
+            background-color: var(--premier-couleur);
+            color: white;
+            padding: 15px 50px;
+            border-radius: 5px;
+            font-size: 32px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 2px solid var(--second-couleur);
+        }
+
+        .classement-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 2px solid var(--premier-couleur);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: palegreen;
+            color: green;
+            padding: 15px 10px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        th:first-child {
+            width: 60px;
+            text-align: center;
+        }
+
+        .th1 {
+            min-width: 200px;
+        }
+
+        .th2, .th3, .th4, .th5, .th6, .th7, .th8, .th9, .th10 {
+            width: 70px;
+            text-align: center;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:nth-child(1) td {
+            background-color: green;
+            color: white;
+        }
+        tr:nth-child(2) td {
+            background-color: chartreuse;
+        }
+        tr:nth-child(n+3):nth-child(-n+14) td {
+            background-color: aliceblue;
+            color: black;
+        }
+        tr:nth-last-child(-n+2) td {
+            background-color: red;
+            color: white;
+        }
+
+        .rank-cell {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .team-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .team-cell img {
+            height: 30px;
+            width: 30px;
+            object-fit: contain;
+            border: 2px solid var(--second-couleur);
+            border-radius: 50%;
+        }
+
+        .team-cell a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .team-cell a:hover {
+            color: var(--premier-couleur);
+        }
+
+        .stat-cell {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .legend {
+            max-width: 1000px;
+            margin: 30px auto 20px;
+            padding: 15px 20px;
+            background-color: white;
+            border-radius: 5px;
+            border: 2px solid var(--premier-couleur);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 3px;
+        }
+
+        .legend-color.leader { background-color: green; }
+        .legend-color.second { background-color: chartreuse; }
+        .legend-color.mid { background-color: aliceblue; border: 1px solid #ccc; }
+        .legend-color.relegation { background-color: red; }
+
+        .stats-grid {
+            max-width: 1000px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--premier-couleur), #b22222);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(214, 47, 47, 0.3);
+        }
+
+        .stat-card i {
+            font-size: 40px;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stat-info h3 {
+            font-size: 14px;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .stat-info p {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .back-button {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .back-btn {
+            background-color: var(--premier-couleur);
+            padding: 12px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border: 2px solid white;
+        }
+
+        .back-btn:hover {
+            background-color: red;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        footer {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        footer h2 {
+            margin-bottom: 20px;
+        }
+
+        footer div {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        footer a {
+            color: white;
+            font-size: 28px;
+            transition: all 0.3s;
+        }
+
+        footer a:hover {
+            color: var(--second-couleur);
+            transform: translateY(-5px);
+        }
+
+        hr {
+            width: 50%;
+            margin: 20px auto;
+            border: 1px solid var(--second-couleur);
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            header nav ul {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+                padding: 12px 30px;
+            }
+
+            .classement-container {
+                padding: 10px;
+            }
+
+            .team-cell {
+                gap: 8px;
+            }
+
+            .team-cell img {
+                height: 25px;
+                width: 25px;
+            }
+
+            .legend {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="img/img1/ChatGPT Image 12 mars 2026, 15_12_37.png" alt="logo SN Ligue 1">
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="actualites.html">Actualités</a></li>
+                <li><a href="matchs.html">Matchs</a></li>
+                <li><a href="classement.html" style="color: orange;">Classement</a></li>
+            </ul>
+        </nav>
+        <h1>SN Ligue 1</h1>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <h2>CLASSEMENT LIGUE 1 SÉNÉGAL</h2>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color leader"></div>
+                <span>Ligue des Champions</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color second"></div>
+                <span>2ème place</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color mid"></div>
+                <span>Milieu de tableau</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color relegation"></div>
+                <span>Zone de relégation</span>
+            </div>
+        </div>
+
+        <div class="classement-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rg</th>
+                        <th class="th1">Équipe</th>
+                        <th class="th2">Pts</th>
+                        <th class="th3">J</th>
+                        <th class="th4">V</th>
+                        <th class="th5">N</th>
+                        <th class="th6">D</th>
+                        <th class="th7">BP</th>
+                        <th class="th8">BC</th>
+                        <th class="th9">Diff</th>
+                    </tr>
+                </thead>
+                <tbody id="fullRankingBody">
+                    <tr><td colspan="10" style="text-align: center;">Chargement...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="bi bi-calendar-check"></i>
+                <div class="stat-info">
+                    <h3>Matchs joués</h3>
+                    <p id="totalMatches">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="bi bi-trophy"></i>
+                <div class="stat-info">
+                    <h3>Matchs en direct</h3>
+                    <p id="liveMatches">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="bi bi-people"></i>
+                <div class="stat-info">
+                    <h3>Équipes</h3>
+                    <p id="totalTeams">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="bi bi-graph-up"></i>
+                <div class="stat-info">
+                    <h3>Journée actuelle</h3>
+                    <p id="journeyDisplay">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-button">
+            <a href="index.html" class="back-btn"><i class="bi bi-arrow-left"></i> Retour à l'accueil</a>
+        </div>
+    </main>
+
+    <footer>
+        <h2>Suivez-nous sur</h2>
+        <div>
+            <a href="#"><i class="bi bi-tiktok"></i></a>
+            <a href="#"><i class="bi bi-twitter-x"></i></a>
+            <a href="#"><i class="bi bi-instagram"></i></a>
+            <a href="#"><i class="bi bi-facebook"></i></a>
+        </div>
+        <hr>
+        <p>2026 &copy; Le championnat du Senegal en avant.</p>
+    </footer>
+
+    <script src="js/data-shared.js"></script>
+
+    <script>
+        function loadFullRanking() {
+            const tbody = document.getElementById('fullRankingBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            SharedData.ranking.forEach(team => {
+                const teamInfo = SharedData.teams.find(t => t.id === team.teamId);
+                if (!teamInfo) return;
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="rank-cell">${team.rank}</td>
+                        <td class="team-cell">
+                            <img src="img/${teamInfo.logo}" alt="${teamInfo.name}">
+                            <a href="${teamInfo.site}" target="_blank">${teamInfo.name}</a>
+                        </td>
+                        <td class="stat-cell">${team.points}</td>
+                        <td class="stat-cell">${team.played}</td>
+                        <td class="stat-cell">${team.wins}</td>
+                        <td class="stat-cell">${team.draws}</td>
+                        <td class="stat-cell">${team.losses}</td>
+                        <td class="stat-cell">${team.gf}</td>
+                        <td class="stat-cell">${team.ga}</td>
+                        <td class="stat-cell">${team.gd}</td>
+                    </tr>
+                `;
+            });
+            
+            if (tbody.innerHTML === '') {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center;">Aucune donnée disponible</td></tr>';
+            }
+        }
+        
+        function updateStats() {
+            const finishedMatches = SharedData.matches.filter(m => m.status === 'finished').length;
+            const liveMatches = SharedData.matches.filter(m => m.status === 'live').length;
+            const maxJourney = Math.max(...SharedData.matches.map(m => m.journey), 0);
+            
+            document.getElementById('totalMatches').textContent = finishedMatches;
+            document.getElementById('liveMatches').textContent = liveMatches;
+            document.getElementById('totalTeams').textContent = SharedData.teams.length;
+            document.getElementById('journeyDisplay').textContent = maxJourney;
+        }
+        
+        function refreshPage() {
+            loadFullRanking();
+            updateStats();
+        }
+        
+        refreshPage();
+        setInterval(refreshPage, 30000);
+    </script>
+</body>
+</html>

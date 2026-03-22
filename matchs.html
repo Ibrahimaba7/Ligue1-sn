@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matchs - SN LIGUE 1</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        :root {
+            --premier-couleur: rgb(214, 47, 47);
+            --second-couleur: orange;
+            --troisieme-couleur: whitesmoke;
+        }
+
+        body {
+            background-color: var(--troisieme-couleur);
+        }
+
+        header {
+            display: flex;
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, var(--premier-couleur), #b22222);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        header img {
+            width: 80px;
+            height: auto;
+            border-radius: 50%;
+            border: 3px solid white;
+            transition: transform 0.3s;
+        }
+
+        header img:hover {
+            transform: scale(1.05);
+        }
+
+        header nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        header nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        header nav ul li a:hover {
+            color: var(--second-couleur);
+            text-decoration: underline;
+        }
+
+        header h1 {
+            color: var(--second-couleur);
+            font-size: 2rem;
+            letter-spacing: 2px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .page-header h2 {
+            display: inline-block;
+            background-color: var(--premier-couleur);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 5px;
+            font-size: 28px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 2px solid var(--second-couleur);
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background-color: white;
+            border: 2px solid var(--premier-couleur);
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--premier-couleur);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-btn i {
+            font-size: 1.2rem;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--premier-couleur);
+            color: white;
+        }
+
+        .filter-btn.active {
+            background-color: var(--premier-couleur);
+            color: white;
+        }
+
+        .week-selector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .week-btn {
+            background-color: var(--premier-couleur);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid white;
+        }
+
+        .week-btn:hover {
+            background-color: var(--second-couleur);
+            transform: scale(1.1);
+        }
+
+        .week-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .week-btn.disabled:hover {
+            transform: none;
+            background-color: var(--premier-couleur);
+        }
+
+        .current-week {
+            background-color: var(--premier-couleur);
+            color: white;
+            padding: 10px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 18px;
+            border: 2px solid white;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .match-card {
+            width: 350px;
+            background-color: var(--second-couleur);
+            padding: 5px;
+            border-radius: 5px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            border: 2px solid white;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .match-date {
+            background-color: var(--premier-couleur);
+            padding: 8px 15px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border: 2px solid white;
+        }
+
+        .match-date i {
+            margin-right: 5px;
+        }
+
+        .match-teams {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .team img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            background-color: white;
+            border-radius: 50%;
+            padding: 8px;
+            border: 3px solid var(--premier-couleur);
+        }
+
+        .team-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .match-score {
+            background-color: var(--premier-couleur);
+            padding: 8px 20px;
+            border-left: 3px solid white;
+            border-right: 3px solid white;
+            font-weight: bold;
+            font-size: 24px;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .match-info {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            margin: 15px 0;
+            border-top: 2px solid white;
+            border-bottom: 2px solid white;
+        }
+
+        .live-badge {
+            display: inline-block;
+            background-color: var(--premier-couleur);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border: 2px solid white;
+            animation: livePulse 1.5s infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { background-color: var(--premier-couleur); }
+            50% { background-color: #ff4444; }
+        }
+
+        .view-more {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .view-more-btn {
+            background-color: var(--premier-couleur);
+            padding: 15px 40px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            display: inline-block;
+            transition: all 0.3s;
+            border: 2px solid white;
+            font-size: 18px;
+        }
+
+        .view-more-btn:hover {
+            background-color: red;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .view-more-btn i {
+            margin-left: 10px;
+        }
+
+        .no-matches {
+            text-align: center;
+            grid-column: 1/-1;
+            padding: 50px;
+            font-size: 18px;
+            color: #666;
+            background: white;
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        footer {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        footer h2 {
+            margin-bottom: 20px;
+        }
+
+        footer div {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        footer a {
+            color: white;
+            font-size: 28px;
+            transition: all 0.3s;
+        }
+
+        footer a:hover {
+            color: var(--second-couleur);
+            transform: translateY(-5px);
+        }
+
+        hr {
+            width: 50%;
+            margin: 20px auto;
+            border: 1px solid var(--second-couleur);
+        }
+
+        /* Indicateur de journée */
+        .journey-info {
+            text-align: center;
+            margin: 10px 0;
+            color: var(--premier-couleur);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            header nav ul {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            .filters {
+             display: flex;
+            justify-content: center;
+            /* gap: 0; */
+        }
+
+         .filter-btn {
+            padding: 5px ;
+            gap: 0;
+        } 
+
+            .container {
+                padding: 10px;
+            }
+
+            .match-card {
+                width: 100%;
+            }
+
+            /* .match-teams {
+                flex-direction: column;
+                gap: 15px;
+            } */
+
+            /* .team {
+                flex-direction: row;
+                width: 100%;
+                justify-content: space-between;
+                padding: 0 20px;
+            } */
+
+            .team img {
+                width: 50px;
+                height: 50px;
+            }
+
+            /* .match-info {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            } */
+
+            .current-week {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="img/img1/ChatGPT Image 12 mars 2026, 15_12_37.png" alt="logo SN Ligue 1">
+        <nav>
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="actualites.html">Actualités</a></li>
+                <li><a href="matchs.html" style="color: orange;">Matchs</a></li>
+                <li><a href="classement.html">Classement</a></li>
+            </ul>
+        </nav>
+        <h1>SN Ligue 1</h1>
+    </header>
+
+    <main>
+        <div class="page-header">
+            <h2>Les matchs de la semaine</h2>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all"><i class="bi bi-calendar-week"></i> Tous</button>
+            <button class="filter-btn" data-filter="live"><i class="bi bi-play-circle"></i> En direct</button>
+            <button class="filter-btn" data-filter="finished"><i class="bi bi-check-circle"></i> Terminés</button>
+            <button class="filter-btn" data-filter="upcoming"><i class="bi bi-clock"></i> À venir</button>
+        </div>
+
+        <div class="week-selector">
+            <button class="week-btn" id="prevWeek"><i class="bi bi-chevron-left"></i></button>
+            <span class="current-week" id="currentWeekDisplay"><i class="bi bi-calendar3"></i> Journée --</span>
+            <button class="week-btn" id="nextWeek"><i class="bi bi-chevron-right"></i></button>
+        </div>
+        
+        <div class="journey-info" id="journeyInfo"></div>
+
+        <div class="container" id="matchesContainer">
+            <div class="no-matches">Chargement des matchs...</div>
+        </div>
+
+        <div class="view-more">
+            <a href="#" class="view-more-btn" id="viewAllBtn">
+                Voir toutes les journées <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <h2>Suivez-nous sur</h2>
+        <div>
+            <a href="#"><i class="bi bi-tiktok"></i></a>
+            <a href="#"><i class="bi bi-twitter-x"></i></a>
+            <a href="#"><i class="bi bi-instagram"></i></a>
+            <a href="#"><i class="bi bi-facebook"></i></a>
+        </div>
+        <hr>
+        <p>2026 &copy; Le championnat du Senegal en avant.</p>
+    </footer>
+
+    <script src="js/data-shared.js"></script>
+
+    <script>
+        let currentJourney = 1;
+        let currentFilter = 'all';
+        
+        // Fonction pour obtenir la dernière journée (la plus élevée)
+        function getMaxJourney() {
+            if (!SharedData.matches || SharedData.matches.length === 0) return 1;
+            return Math.max(...SharedData.matches.map(m => m.journey));
+        }
+        
+        // Fonction pour obtenir la première journée (la plus petite)
+        function getMinJourney() {
+            if (!SharedData.matches || SharedData.matches.length === 0) return 1;
+            return Math.min(...SharedData.matches.map(m => m.journey));
+        }
+        
+        // Fonction pour mettre à jour l'état des boutons de navigation
+        function updateNavigationButtons() {
+            const maxJourney = getMaxJourney();
+            const minJourney = getMinJourney();
+            const prevBtn = document.getElementById('prevWeek');
+            const nextBtn = document.getElementById('nextWeek');
+            
+            if (prevBtn) {
+                if (currentJourney <= minJourney) {
+                    prevBtn.classList.add('disabled');
+                } else {
+                    prevBtn.classList.remove('disabled');
+                }
+            }
+            
+            if (nextBtn) {
+                if (currentJourney >= maxJourney) {
+                    nextBtn.classList.add('disabled');
+                } else {
+                    nextBtn.classList.remove('disabled');
+                }
+            }
+        }
+        
+        // Fonction pour afficher des informations sur la journée
+        function updateJourneyInfo() {
+            const journeyInfo = document.getElementById('journeyInfo');
+            if (!journeyInfo) return;
+            
+            // const maxJourney = getMaxJourney();
+            // if (currentJourney === maxJourney) {
+            //     journeyInfo.innerHTML = '<i class="bi bi-star-fill"></i> JOURNÉE  <i class="bi bi-star-fill"></i>';
+            //     journeyInfo.style.color = 'var(--second-couleur)';
+            //     journeyInfo.style.fontWeight = 'bold';
+            //     journeyInfo.style.fontSize = '14px';
+            // } else {
+            //     journeyInfo.innerHTML = '';
+            // }
+        }
+        
+        function loadMatches() {
+            const container = document.getElementById('matchesContainer');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            let matchesToShow = SharedData.matches.filter(m => m.journey === currentJourney);
+            
+            if (currentFilter !== 'all') {
+                matchesToShow = matchesToShow.filter(m => m.status === currentFilter);
+            }
+            
+            if (matchesToShow.length === 0) {
+                container.innerHTML = '<div class="no-matches">Aucun match pour cette journée et ce filtre.</div>';
+                updateNavigationButtons();
+                updateJourneyInfo();
+                return;
+            }
+            
+            // Trier les matchs par date et heure
+            matchesToShow.sort((a, b) => {
+                const dateA = new Date(a.date + ' ' + a.time);
+                const dateB = new Date(b.date + ' ' + b.time);
+                return dateA - dateB;
+            });
+            
+            matchesToShow.forEach(match => {
+                const homeTeam = SharedData.teams.find(t => t.id === match.homeTeam);
+                const awayTeam = SharedData.teams.find(t => t.id === match.awayTeam);
+                
+                if (!homeTeam || !awayTeam) return;
+                
+                const statusHTML = match.status === 'live' ? 
+                    '<span class="live-badge"><i class="bi bi-broadcast"></i> EN DIRECT</span>' : '';
+                
+                const matchCard = document.createElement('div');
+                matchCard.className = 'match-card';
+                
+                const dateObj = new Date(match.date);
+                const formattedDate = dateObj.toLocaleDateString('fr-FR', { 
+                    day: 'numeric', 
+                    month: 'long', 
+                    year: 'numeric' 
+                });
+                
+                // Déterminer la classe pour le score en fonction du statut
+                const scoreDisplay = match.status === 'upcoming' ? 'vs' : `${match.homeScore} - ${match.awayScore}`;
+                
+                matchCard.innerHTML = `
+                    ${statusHTML}
+                    <div class="match-date">
+                        <i class="bi bi-calendar3"></i> ${formattedDate} - ${match.time}
+                    </div>
+                    <div class="match-teams">
+                        <div class="team">
+                            <img src="img/${homeTeam.logo}" alt="${homeTeam.name}" onerror="this.src='img/placeholder.png'">
+                            <span class="team-name">${homeTeam.name}</span>
+                        </div>
+                        <div class="match-score">${scoreDisplay}</div>
+                        <div class="team">
+                            <img src="img/${awayTeam.logo}" alt="${awayTeam.name}" onerror="this.src='img/placeholder.png'">
+                            <span class="team-name">${awayTeam.name}</span>
+                        </div>
+                    </div>
+                    <div class="match-info">
+                        <div class="match-info-item">
+                            <i class="bi bi-geo-alt-fill"></i> ${match.stadium}
+                        </div>
+                        <div class="match-info-item">
+                            <i class="bi ${match.status === 'live' ? 'bi-play-circle' : match.status === 'finished' ? 'bi-check-circle' : 'bi-clock'}"></i> 
+                            ${match.status === 'live' ? 'En direct' : match.status === 'finished' ? 'Terminé' : 'À venir'}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(matchCard);
+            });
+            
+            document.getElementById('currentWeekDisplay').innerHTML = `<i class="bi bi-calendar3"></i> Journée ${currentJourney}`;
+            updateNavigationButtons();
+            updateJourneyInfo();
+        }
+        
+        function setupFilters() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    loadMatches();
+                });
+            });
+        }
+        
+        function setupWeekNavigation() {
+            const prevBtn = document.getElementById('prevWeek');
+            const nextBtn = document.getElementById('nextWeek');
+            
+            prevBtn.addEventListener('click', () => {
+                const minJourney = getMinJourney();
+                if (currentJourney > minJourney) {
+                    currentJourney--;
+                    loadMatches();
+                }
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                const maxJourney = getMaxJourney();
+                if (currentJourney < maxJourney) {
+                    currentJourney++;
+                    loadMatches();
+                }
+            });
+        }
+        
+        function setupViewAll() {
+            document.getElementById('viewAllBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                // Réinitialiser le filtre à "Tous"
+                currentFilter = 'all';
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    if (btn.dataset.filter === 'all') {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                // Aller à la première journée (pour voir tous les matchs)
+                currentJourney = getMinJourney();
+                loadMatches();
+                // Faire défiler vers le haut
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+        
+        function init() {
+            // Initialiser la journée courante à la dernière journée
+            currentJourney = getMaxJourney();
+            
+            setupFilters();
+            setupWeekNavigation();
+            setupViewAll();
+            loadMatches();
+        }
+        
+        // Exécuter après le chargement des données
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+        
+        // Rafraîchir toutes les 30 secondes
+        setInterval(() => {
+            if (document.getElementById('matchesContainer')) {
+                loadMatches();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
